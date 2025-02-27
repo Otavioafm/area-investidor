@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Startup - Investment Hub</title>
+    <link rel="stylesheet" href="css/cadastro-login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-container">
+            <a href="hubCadastro.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+            <h1>Cadastro de Startup</h1>
+            <p class="subtitle">Comece sua jornada de crescimento</p>
+            <form class="auth-form" id="cadastroForm">
+                <div class="form-group">
+                    <label for="startup-name">Nome da Startup</label>
+                    <input type="text" id="startup-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="startup-email">E-mail Corporativo</label>
+                    <input type="email" id="startup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="startup-segment">Segmento</label>
+                    <select id="startup-segment" required>
+                        <option value="">Selecione um segmento</option>
+                        <option value="tech">Tecnologia</option>
+                        <option value="health">Saúde</option>
+                        <option value="finance">Finanças</option>
+                        <option value="education">Educação</option>
+                        <option value="other">Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="startup-password">Senha</label>
+                    <input type="password" id="startup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="startup-confirm-password">Confirmar Senha</label>
+                    <input type="password" id="startup-confirm-password" required>
+                </div>
+                <button type="submit" class="submit-button">Cadastrar Startup</button>
+            </form>
+            <p class="auth-footer">
+                Já tem uma conta? <a href="startup-login.html">Faça login</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        // Função para simular o cadastro de startup
+        function cadastrarStartup() {
+            // Obter os valores dos campos
+            const nome = document.getElementById('startup-name').value;
+            const email = document.getElementById('startup-email').value;
+            const segmento = document.getElementById('startup-segment').value;
+            const senha = document.getElementById('startup-password').value;
+            const confirmarSenha = document.getElementById('startup-confirm-password').value;
+
+            // Verificar se todos os campos estão preenchidos
+            if (!nome || !email || !segmento || !senha || !confirmarSenha) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            // Verificar se as senhas coincidem
+            if (senha !== confirmarSenha) {
+                alert('As senhas não coincidem. Por favor, tente novamente.');
+                return;
+            }
+
+            // Simular cadastro bem-sucedido
+            localStorage.setItem('isLoggedIn', 'true'); // Define o estado de login
+            localStorage.setItem('userEmail', email); // Armazena o e-mail do usuário
+            window.location.href = 'index.html'; // Redireciona para a página inicial
+        }
+
+        // Adicionar evento de envio ao formulário
+        document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o comportamento padrão do formulário
+            cadastrarStartup(); // Chama a função de cadastro
+        });
+    </script>
+</body>
+</html>

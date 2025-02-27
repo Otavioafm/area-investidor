@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Investimento</title>
+    <link rel="stylesheet" href="/css/formulario.css">
+</head>
+<body>
+    <div class="container">
+        <form id="investmentForm" class="form">
+            <h1>Formulário de Investimento</h1>
+            
+            <!-- Informações Básicas -->
+            <section class="form-section">
+                <h2>Informações da Empresa</h2>
+                
+                <div class="form-group">
+                    <label for="companyName">Nome da Empresa*</label>
+                    <input type="text" id="companyName" name="companyName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="website">Site da Empresa</label>
+                    <input type="url" id="website" name="website" placeholder="https://exemplo.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="linkedin">LinkedIn da Empresa</label>
+                    <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/company/...">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrição breve da empresa*</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="teamSize">Tamanho da equipe*</label>
+                    <select id="teamSize" name="teamSize" required>
+                        <option value="">Selecione uma opção</option>
+                        <option value="1-5">1-5 funcionários</option>
+                        <option value="6-15">6-15 funcionários</option>
+                        <option value="16-30">16-30 funcionários</option>
+                        <option value="31-50">31-50 funcionários</option>
+                        <option value="51+">Mais de 50 funcionários</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="departments">Setores internos*</label>
+                    <input type="text" id="departments" name="departments" placeholder="Ex: RH, Marketing, Vendas" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="clientProfile">Perfil de cliente*</label>
+                    <textarea id="clientProfile" name="clientProfile" rows="3" required></textarea>
+                </div>
+            </section>
+
+            <!-- CNPJ Section -->
+            <section class="form-section">
+                <h2>Informações Fiscais</h2>
+                
+                <div class="form-group">
+                    <label for="hasCNPJ">A empresa possui CNPJ?*</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="hasCNPJ" value="yes" required> Sim
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="hasCNPJ" value="no" required> Não
+                        </label>
+                    </div>
+                </div>
+
+                <div id="cnpjSection" class="hidden">
+                    <div class="form-group">
+                        <label for="cnpj">CNPJ*</label>
+                        <input type="text" id="cnpj" name="cnpj" class="cnpj-input" placeholder="XX.XXX.XXX/XXXX-XX">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="legalNature">Natureza Jurídica*</label>
+                        <select id="legalNature" name="legalNature">
+                            <option value="">Selecione uma opção</option>
+                            <option value="ltda">Sociedade Limitada (LTDA)</option>
+                            <option value="sa">Sociedade Anônima (S/A)</option>
+                            <option value="mei">MEI</option>
+                            <option value="eireli">EIRELI</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="operationTime">Há quanto tempo sua empresa está em operação?*</label>
+                        <select id="operationTime" name="operationTime">
+                            <option value="">Selecione uma opção</option>
+                            <option value="less-1">Menos de 1 ano</option>
+                            <option value="1-2">1-2 anos</option>
+                            <option value="3-5">3-5 anos</option>
+                            <option value="more-5">Mais de 5 anos</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>CNPJ já foi utilizado para outras atividades?*</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="cnpjPreviousUse" value="yes"> Sim
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="cnpjPreviousUse" value="no"> Não
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="previousActivitySection" class="hidden">
+                        <div class="form-group">
+                            <label for="previousActivity">Qual atividade anterior?*</label>
+                            <input type="text" id="previousActivity" name="previousActivity" placeholder="Ex: Comércio varejista">
+                        </div>
+                        <div class="form-group">
+                            <label for="previousActivityDetails">Detalhes da atividade anterior*</label>
+                            <textarea id="previousActivityDetails" name="previousActivityDetails" rows="3" placeholder="Descreva os detalhes da atividade anterior"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>A empresa tem mais de um CNPJ?*</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="multipleCNPJ" value="yes"> Sim
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="multipleCNPJ" value="no"> Não
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="multipleCnpjSection" class="hidden">
+                        <div class="form-group">
+                            <label for="additionalCnpj">CNPJ Adicional*</label>
+                            <input type="text" id="additionalCnpj" name="additionalCnpj" class="cnpj-input" placeholder="XX.XXX.XXX/XXXX-XX">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>A empresa já abriu CNPJs fora do Brasil?*</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="internationalCNPJ" value="yes"> Sim
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="internationalCNPJ" value="no"> Não
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="internationalCnpjSection" class="hidden">
+                        <div class="form-group">
+                            <label for="internationalCnpjNumber">Número do Registro Internacional*</label>
+                            <input type="text" id="internationalCnpjNumber" name="internationalCnpjNumber" placeholder="Número do registro internacional">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Information -->
+            <section class="form-section">
+                <h2>Informações de Negócio</h2>
+
+                <div class="form-group">
+                    <label for="partnersCount">Número de sócios*</label>
+                    <input type="number" id="partnersCount" name="partnersCount" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="payingCustomers">Quantos clientes pagantes atuais?*</label>
+                    <input type="number" id="payingCustomers" name="payingCustomers" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="monthlyRevenue">Faturamento mensal (R$)*</label>
+                    <input type="text" id="monthlyRevenue" name="monthlyRevenue" placeholder="R$ 0,00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="annualRevenue">Faturamento anual (R$)*</label>
+                    <input type="text" id="annualRevenue" name="annualRevenue" placeholder="R$ 0,00" required>
+                </div>
+            </section>
+
+            <!-- Investment Information -->
+            <section class="form-section">
+                <h2>Informações de Investimento</h2>
+
+                <div class="form-group">
+                    <label>A empresa já recebeu investimento?*</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="hasInvestment" value="yes" required> Sim
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="hasInvestment" value="no" required> Não
+                        </label>
+                    </div>
+                </div>
+
+                <div id="previousInvestmentSection" class="hidden">
+                    <div class="form-group">
+                        <label for="previousInvestmentAmount">Qual foi o valor do investimento recebido? (R$)*</label>
+                        <input type="text" id="previousInvestmentAmount" name="previousInvestmentAmount" placeholder="R$ 0,00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="desiredInvestment">Valor da rodada de investimento desejado (R$)*</label>
+                    <input type="text" id="desiredInvestment" name="desiredInvestment" placeholder="R$ 0,00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="investmentDuration">Estima que esse aporte abastecerá a empresa durante quantos meses?*</label>
+                    <input type="number" id="investmentDuration" name="investmentDuration" min="1" required>
+                </div>
+            </section>
+
+            <!-- Additional Information -->
+            <section class="form-section">
+                <h2>Informações Adicionais</h2>
+
+                <div class="form-group">
+                    <label for="additionalInfo">Gostaria de acrescentar algo?</label>
+                    <textarea id="additionalInfo" name="additionalInfo" rows="4"></textarea>
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">Enviar</button>
+            </div>
+        </form>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+</html>

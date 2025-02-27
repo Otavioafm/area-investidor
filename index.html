@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit-no">
+    <title>Find Invest - Encontre Startups</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="/img/LOGO-BRANCO-G (1).png" alt="Logo da Empresa">
+            </div>
+            <button class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="nav-menu" id="navMenu">
+                <button class="startup-btn">Cadastrar Startup</button>
+                <button class="login-btn" onclick="window.location.href='hubLogin.html'">Login</button>
+                <button class="cadastro-btn" onclick="window.location.href='hubCadastro.html'">Cadastro</button>
+            </nav>
+        </div>
+        <div class="hero">
+            <h1>Encontre as<br>melhores Startups</h1>
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar startups...">
+                </div>
+                <button class="search-button">BUSCAR</button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="categories">
+                <div class="categories-main">
+                    <!-- Filtros serão gerados dinamicamente pelo JavaScript -->
+                </div>
+                <div class="categories-expanded">
+                    <button class="category-btn">Finanças</button>
+                    <button class="expand-btn">
+                        <i class="fas fa-plus"></i>
+                        Mais filtros
+                    </button>
+                </div>
+                <div class="categories-expanded">
+                    <button class="category-btn">Educação</button>
+                    <button class="category-btn">Fabricação</button>
+                    <button class="category-btn">Agronegócio</button>
+                    <button class="category-btn">E-commerce</button>
+                    <button class="category-btn">Logística</button>
+                    <button class="category-btn">Sustentabilidade</button>
+                </div>
+            </div>
+            <div class="content-wrapper">
+                <div class="startups-list" id="startupsList">
+                    <!-- Startups will be loaded here via JavaScript -->
+                </div>
+                <div class="startup-details" id="startupDetails">
+                    <!-- Startup details will be shown here -->
+                </div>
+            </div>
+        </div>
+        <!-- Popup de Login -->
+        <div class="popup-overlay" id="popupOverlay"></div>
+        <div class="popup" id="loginPopup">
+            <div class="popup-header">
+                <h2>Faça Login</h2>
+                <button class="popup-close" id="closePopup">&times;</button>
+            </div>
+            <div class="popup-message">
+                <p>Você precisa estar logado para acessar essa função.</p>
+            </div>
+            <div class="popup-actions">
+                <a href="hubLogin.html" class="submit-button" id="popupLoginButton">Login</a>
+                <a href="hubCadastro.html" class="submit-button" id="popupCadastroButton">Cadastro</a>
+            </div>
+        </div>
+    </main>
+    <div class="modal" id="startupModal">
+        <div class="modal-header">
+            <h2 id="modalTitle"></h2>
+            <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-content" id="modalContent">
+            <!-- Modal content will be loaded here via JavaScript -->
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="disable-tabs.js"></script>
+    <script src="js/auth-popup.js"></script>
+</body>
+</html>
