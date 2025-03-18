@@ -14,7 +14,7 @@ export class StartupManager {
                 },
                 media: {
                     logo: "https://picsum.photos/60",
-                    video: "//www.youtube.com/embed/dQw4w9WgXcQ",
+                    video: "https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1",
                     images: ["url1", "url2"]
                 },
                 team: [

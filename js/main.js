@@ -171,10 +171,10 @@ async function showStartupDetails(id) {
             <div class="video-section" data-content="video" style="display: none;">
                 ${startup.media?.video ? `
                     <div class="video-wrapper">
-                        <iframe src="${startup.media.video}" 
-                                title="Video" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
+                        <iframe 
+                            src="${startup.media.video}" 
+                            frameborder="0"
+                            allowfullscreen>
                         </iframe>
                     </div>
                 ` : '<p>Nenhum vídeo disponível</p>'}
@@ -182,34 +182,21 @@ async function showStartupDetails(id) {
         `;
 
         if (isSmallScreen) {
-            // Versão Mobile: Bottom Sheet
             modalTitle.textContent = startup.name;
             modalContent.innerHTML = modalContentHTML;
             startupModal.classList.add('show');
-            // Não manipula o scroll aqui
+            document.body.classList.add('modal-open');
+            
+            // Mantém a posição do scroll
+            document.body.style.top = `-${currentScrollPos}px`;
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            
+            setupTabs(startupModal);
         } else {
-            // Versão Desktop: Lateral fixa
             startupDetails.classList.remove('hidden');
             startupDetails.innerHTML = modalContentHTML;
-
-            // Mesmo código para desktop
-            const tabs = startupDetails.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-
-                    startupDetails.querySelectorAll('[data-content]').forEach(content => {
-                        content.style.display = 'none';
-                    });
-
-                    const contentId = tab.getAttribute('data-tab');
-                    const content = startupDetails.querySelector(`[data-content="${contentId}"]`);
-                    if (content) {
-                        content.style.display = 'block';
-                    }
-                });
-            });
+            setupTabs(startupDetails);
         }
 
         // Mostra a primeira tab por padrão
@@ -223,6 +210,54 @@ async function showStartupDetails(id) {
         
     } catch (error) {
         console.error('Erro ao carregar detalhes:', error);
+    }
+}
+
+// Nova função para configurar as tabs
+function setupTabs(container) {
+    const tabs = container.querySelectorAll('.tab');
+    const contents = container.querySelectorAll('[data-content]');
+    
+    // Esconde todos os conteúdos primeiro
+    contents.forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // Mostra o primeiro conteúdo por padrão
+    const firstContent = container.querySelector('[data-content="descricao"]');
+    if (firstContent) {
+        firstContent.style.display = 'block';
+    }
+
+    // Adiciona evento de clique em cada tab
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Remove active de todas as tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            // Adiciona active na tab clicada
+            tab.classList.add('active');
+            
+            // Esconde todos os conteúdos
+            contents.forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Mostra o conteúdo correspondente
+            const contentId = tab.getAttribute('data-tab');
+            const content = container.querySelector(`[data-content="${contentId}"]`);
+            if (content) {
+                content.style.display = 'block';
+            }
+        });
+    });
+
+    // Ativa a primeira tab
+    const firstTab = container.querySelector('.tab');
+    if (firstTab) {
+        firstTab.click();
     }
 }
 
@@ -396,21 +431,62 @@ function addFilterEventListeners() {
 
 // Add Event Listeners - Separado em função própria
 function addEventListeners() {
+    // Evento de clique no card
     document.querySelectorAll('.startup-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            if (!e.target.closest('.like-button')) {
-                const id = parseInt(card.dataset.id);
-                showStartupDetails(id);
+            const clickedElement = e.target;
+            const isButton = clickedElement.closest('.invest-button') || 
+                           clickedElement.closest('.like-button');
+            
+            if (isButton) {
+                e.stopPropagation();
+                return;
+            }
+
+            const id = parseInt(card.dataset.id);
+            showStartupDetails(id);
+        });
+    });
+
+    // Evento do botão investir - Nova implementação
+    document.querySelectorAll('.invest-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (!isUserLoggedIn()) {
+                openPopup();
+                return;
+            }
+
+            const startupId = button.dataset.id;
+            const startup = selectedStartup || getStartupById(startupId);
+            
+            if (startup) {
+                const params = new URLSearchParams({
+                    startupId: startup.id,
+                    name: encodeURIComponent(startup.name),
+                    logo: encodeURIComponent(startup.media?.logo || ''),
+                    category: encodeURIComponent(startup.category),
+                    investment: encodeURIComponent(startup.metrics.investment),
+                    equity: encodeURIComponent(startup.metrics.equity)
+                });
+                window.location.href = `pagamento.html?${params.toString()}`;
             }
         });
     });
 
-    // Adicionar evento de clique ao botão "Investir"
-    document.querySelectorAll('.invest-button').forEach(button => {
+    // Evento do botão like
+    document.querySelectorAll('.like-button').forEach(button => {
         button.addEventListener('click', (e) => {
             e.preventDefault();
-            const startupId = button.dataset.id;
-            redirectToPage(`pagamento.html?startupId=${startupId}`);
+            e.stopPropagation();
+            
+            const card = button.closest('.startup-card');
+            if (card) {
+                const id = parseInt(card.dataset.id);
+                toggleLike(id);
+            }
         });
     });
 }
@@ -561,12 +637,13 @@ function closeModal() {
     const isSmallScreen = window.innerWidth <= 768;
     
     if (isSmallScreen) {
+        const scrollY = document.body.style.top;
         startupModal.classList.remove('show');
         document.body.classList.remove('modal-open');
-        // Remove os estilos fixos sem modificar o scroll
         document.body.style.position = '';
         document.body.style.width = '';
         document.body.style.top = '';
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
     } else {
         startupModal.classList.remove('show');
         document.body.classList.remove('modal-open');
