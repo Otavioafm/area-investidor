@@ -314,6 +314,11 @@ function showStartupDetails(id) {
     disableTabsForNonLoggedInUsers();
 }
 
+modalClose.addEventListener('click', () => {
+    startupModal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+});
+
 // Disable tabs for non-logged-in users
 function disableTabsForNonLoggedInUsers() {
     const tabs = document.querySelectorAll('.details-tabs .tab');
@@ -384,3 +389,6 @@ function generateCategoryFilters() {
 // Initial render
 generateCategoryFilters();
 renderStartups();
+
+
+

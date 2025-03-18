@@ -1,11 +1,5 @@
 Documentação do Projeto
 
-1. Visão Geral
-Este projeto é uma plataforma web que conecta startups e investidores. Ele permite que usuários busquem startups, visualizem detalhes sobre elas, realizem investimentos e cadastrem suas próprias startups ou perfis de investidores. O sistema inclui funcionalidades como login/cadastro, filtros de categorias, exibição de informações detalhadas sobre startups, cálculo de investimentos e processamento de pagamentos.
-
-2. Estrutura de Arquivos
-O projeto segue uma estrutura modular para facilitar a manutenção e escalabilidade. Abaixo está a organização dos arquivos:
-
 2.1. CSS
 style.css: Estilos globais para o layout principal.
 cadastro-login.css: Estilos específicos para as páginas de login e cadastro.

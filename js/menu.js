@@ -1,23 +1,33 @@
-// Seleciona os elementos
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 
+// Função para abrir o menu
+function openMenu() {
+    navMenu.classList.add('active'); 
+    hamburger.classList.add('active'); 
+    document.body.classList.add('no-scroll'); 
+}
+
 // Função para fechar o menu
 function closeMenu() {
-    navMenu.classList.remove('active');
-    hamburger.classList.remove('active');
+    navMenu.classList.remove('active'); 
+    hamburger.classList.remove('active'); 
+    document.body.classList.remove('no-scroll'); 
 }
 
 // Adiciona o evento de clique no hamburger
 hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    hamburger.classList.toggle('active');
+    if (navMenu.classList.contains('active')) {
+        closeMenu(); 
+    } else {
+        openMenu(); 
+    }
 });
 
 // Fecha o menu quando um botão dentro do menu é clicado
 document.querySelectorAll('.nav-menu button').forEach(button => {
     button.addEventListener('click', () => {
-        closeMenu();
+        closeMenu(); 
     });
 });
 
@@ -26,7 +36,8 @@ document.addEventListener('click', (event) => {
     const isClickInsideMenu = navMenu.contains(event.target);
     const isClickOnHamburger = hamburger.contains(event.target);
 
-    if (!isClickInsideMenu && !isClickOnHamburger) {
-        closeMenu();
+    if (!isClickInsideMenu && !isClickOnHamburger && navMenu.classList.contains('active')) {
+        closeMenu(); 
     }
 });
+
