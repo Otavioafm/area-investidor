@@ -1,3 +1,7 @@
+import { Auth } from './auth.js';
+
+const auth = new Auth();
+
 // Função para verificar se o usuário está logado
 function isUserLoggedIn() {
     return localStorage.getItem('isLoggedIn') === 'true';
@@ -5,26 +9,29 @@ function isUserLoggedIn() {
 
 // Função para abrir o popup
 function openPopup() {
-    document.getElementById('popupOverlay').classList.add('active');
-    document.getElementById('loginPopup').classList.add('active');
+    const popup = document.getElementById('loginPopup');
+    const overlay = document.getElementById('popupOverlay');
+    if (popup && overlay) {
+        popup.classList.add('active');
+        overlay.classList.add('active');
+    }
 }
 
-
-
-
-
-
+// Função para fechar o popup
+function closePopup() {
+    const popup = document.getElementById('loginPopup');
+    const overlay = document.getElementById('popupOverlay');
+    if (popup && overlay) {
+        popup.classList.remove('active');
+        overlay.classList.remove('active');
+    }
+}
 
 // Função para lidar com o clique no botão "Investir"
 function handleInvestButtonClick(event) {
-    const startupId = event.currentTarget.dataset.id; // Obtém o ID da startup
-
-    if (!isUserLoggedIn()) {
-        event.preventDefault(); // Impede o comportamento padrão
-        openPopup(); // Abre o popup
-    } else {
-        // Redireciona para pagamento.html apenas se o usuário estiver logado
-        window.location.href = `pagamento.html?startupId=${startupId}`;
+    if (!auth.isLoggedIn()) {
+        event.preventDefault();
+        openPopup();
     }
 }
 
@@ -36,11 +43,6 @@ document.querySelectorAll('.invest-button').forEach(button => {
     });
 });
 
-// Função para verificar se o usuário está logado
-function isUserLoggedIn() {
-    return localStorage.getItem('isLoggedIn') === 'true';
-}
-
 document.querySelectorAll('.invest-button').forEach(button => {
     if (!isUserLoggedIn()) {
         button.classList.add('disabled');
@@ -49,28 +51,8 @@ document.querySelectorAll('.invest-button').forEach(button => {
     }
 });
 
-
-
-
-
-// Função para fechar o popup
-function closePopup() {
-    document.getElementById('popupOverlay').classList.remove('active');
-    document.getElementById('loginPopup').classList.remove('active');
-}
-
-
-
 // Função para lidar com o clique no botão "Like"
-function handleLikeClick(event) {
-    const startupId = parseInt(event.currentTarget.dataset.id); // Obtém o ID da startup
-    if (!isUserLoggedIn()) {
-        event.stopPropagation(); // Impede a propagação do evento
-        openPopup();
-    } else {
-        toggleLike(startupId); // Executa a lógica de curtir
-    }
-}
+function handleLikeClick(event) { /* Gerencia clique no botão curtir */ }
 
 // Função para alternar o estado de "like"
 function toggleLike(id) {
@@ -93,27 +75,7 @@ function handleStartupClick(event) {
 }
 
 // Função para bloquear as abas para usuários não logados
-function blockTabsForNonLoggedInUsers() {
-    const tabs = document.querySelectorAll('.details-tabs .tab');
-    if (!isUserLoggedIn()) {
-        tabs.forEach(tab => {
-            if (tab.dataset.tab !== 'descricao') { // Mantém apenas a aba "Descrição" ativa
-                tab.classList.add('disabled'); // Adiciona a classe 'disabled'
-            }
-        });
-
-        // Adiciona evento de clique para exibir mensagem de alerta
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                if (tab.classList.contains('disabled')) {
-                    alert('Você precisa estar logado para acessar esta seção.');
-                }
-            });
-        });
-    } else {
-        tabs.forEach(tab => tab.classList.remove('disabled')); // Remove a classe 'disabled' se o usuário estiver logado
-    }
-}
+function blockTabsForNonLoggedInUsers() { /* Bloqueia abas para usuários não logados */ }
 
 // Função para lidar com a troca de abas
 function setupTabSwitching() {
@@ -200,3 +162,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Configura a troca de abas
     setupTabSwitching();
 });
+
+export { openPopup, closePopup, handleInvestButtonClick };

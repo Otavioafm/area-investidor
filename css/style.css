@@ -26,6 +26,8 @@ body {
     color: var(--text-color);
     background-color: var(--gray-100);
     overflow-x: hidden;
+    overflow-y: overlay; /* Melhora a aparência do scroll */
+    padding-right: 0 !important; /* Evita o salto do conteúdo */
 }
 
 header {
@@ -153,17 +155,23 @@ header {
 }
 
 .login-btn,
-.cadastro-btn {
-    background-color: transparent; /* Remove o plano de fundo */
-    color: var(--white); /* Texto branco */
+.cadastro-btn,
+.logout-btn {
+    background-color: transparent;
+    color: var(--white);
     border: none;
-    padding: 0.5rem 1rem; /* Reduz o padding para ficar mais compacto */
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .login-btn:hover,
-.cadastro-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2); /* Fundo semi-transparente ao passar o mouse */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
+.cadastro-btn:hover,
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -260,6 +268,8 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
+    padding-bottom: 120px; /* Espaço maior no final da página */
+    min-height: calc(100vh - 100px); /* Altura mínima considerando o header */
 }
 
 .categories {
@@ -275,40 +285,53 @@ header {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .categories-expanded {
     display: none;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
     width: 100%;
+    margin-top: 1rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    transition: all 0.3s ease;
 }
 
 .categories-expanded.show {
     display: flex;
+    animation: slideDown 0.3s ease;
 }
 
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilização do botão de expandir */
 .expand-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    background: var(--white);
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #666;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.expand-btn i {
-    transition: transform 0.3s ease;
+.expand-btn:hover {
+    background: var(--gray-100);
 }
 
-.expand-btn.active i {
-    transform: rotate(45deg);
+.expand-btn.active {
+    background: var(--gray-200);
 }
 
 .category-btn {
@@ -336,12 +359,14 @@ header {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
+    position: relative; /* Adicionado */
 }
 
 .startups-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem; /* Aumentado o espaço entre cards */
+    margin-bottom: 60px; /* Margem inferior maior */
 }
 
 .startup-card {
@@ -353,6 +378,7 @@ header {
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
+    margin-bottom: 1rem; /* Espaço adicional após cada card */
 }
 
 .startup-card:hover {
@@ -369,14 +395,20 @@ header {
 .startup-logo {
     width: 60px;
     height: 60px;
-    background-color: #f0f0f0;
     border-radius: 8px;
     flex-shrink: 0;
+    overflow: hidden; /* Garante que a imagem não vaze */
+}
+
+.startup-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a imagem cubra o espaço sem distorção */
 }
 
 .startup-info h3 {
     font-size: 1.2rem;
-    color: var(--dark-blue);
+    color: var (--dark-blue);
     margin-bottom: 0.5rem;
     word-wrap: break-word;
 }
@@ -393,9 +425,9 @@ header {
 
 .startup-metrics {
     display: flex;
+    justify-content: space-between; /* Distribui os elementos uniformemente */
     gap: 1rem;
     margin: 1.5rem 0;
-    flex-wrap: wrap;
 }
 
 .metric {
@@ -403,6 +435,10 @@ header {
     flex: 1;
     min-width: 80px;
 }
+
+.metric:first-child { text-align: left; }    /* Investimento à esquerda */
+.metric:nth-child(2) { text-align: center; } /* Equity no centro */
+.metric:last-child { text-align: right; }    /* Investidores à direita */
 
 .metric-value {
     font-size: 1.5rem;
@@ -467,14 +503,93 @@ header {
 .startup-details {
     background: var(--white);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 2rem;
     position: sticky;
     top: 2rem;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transform: translateZ(0); /* Ativa aceleração de hardware */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform; /* Otimiza performance */
+    backface-visibility: hidden; /* Reduz flickering */
+}
+
+/* Estilização do scroll interno do card de detalhes */
+.startup-details::-webkit-scrollbar {
+    width: 6px;
+}
+
+.startup-details::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.startup-details::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
 }
 
 .startup-details.hidden {
     display: none;
+}
+
+.startup-details.scrolling {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.startup-details:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Scroll suave */
+.startup-details {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+}
+
+/* Animação de entrada */
+@keyframes slideInDetails {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.startup-details:not(.hidden) {
+    animation: slideInDetails 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Ajustes para scroll */
+@media (min-width: 769px) {
+    .startup-details {
+        transform: translateY(calc(var(--scroll-offset, 0) * -1));
+    }
+}
+
+/* Melhorias no scroll interno */
+.startup-details::-webkit-scrollbar {
+    width: 6px;
+}
+
+.startup-details::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.startup-details::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.startup-details::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .details-header {
@@ -530,18 +645,262 @@ header {
     display: none;
     position: fixed;
     z-index: 1000;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 50%;
+    top: 50%; /* Centraliza verticalmente */
+    right: 2rem;
+    transform: translateY(-50%); /* Ajusta o centro exato */
+    width: 400px;
+    max-width: calc(100vw - 4rem); /* Evita que fique maior que a tela */
+    max-height: calc(100vh - 4rem); /* Deixa margem em cima e embaixo */
     background-color: var(--white);
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden; /* Esconde o overflow */
+    transition: all 0.3s ease;
+}
+
+.modal.show {
+    display: block;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-40%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%);
+    }
+}
+
+.modal-header {
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 2;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-content {
+    height: 100%;
+    max-height: calc(100vh - 8rem); /* Altura máxima considerando margens */
     overflow-y: auto;
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    transform: translateY(100%);
-    opacity: 0;
+    padding: 1rem;
+    scrollbar-width: thin;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .content-wrapper {
+        grid-template-columns: 1fr; /* Muda para uma coluna */
+    }
+
+    .startup-details {
+        position: fixed; /* Em telas menores, fica fixo */
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto; /* Remove top */
+        height: 80vh; /* Altura em telas menores */
+        margin: 0;
+        border-radius: 20px 20px 0 0;
+        z-index: 1000;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .startup-details.show {
+        transform: translateY(0);
+    }
+
+    .modal {
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+        bottom: 1rem;
+        top: auto;
+        transform: none;
+        max-height: calc(100vh - 8rem);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .modal.show {
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .nav-menu .logout-btn {
+        width: 80%;
+        margin: 0.5rem auto;
+        background-color: transparent;
+        color: var(--white);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 20px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .nav-menu .logout-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0;
+        border-radius: 0;
+        transform: none;
+    }
+
+    .modal-content {
+        height: calc(100vh - 60px); /* Altura total menos o header */
+        max-height: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-header {
+        position: sticky;
+        top: 0;
+        background: var(--white);
+        z-index: 10;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .details-tabs {
+        position: sticky;
+        top: 60px; /* Altura do header */
+        background: var(--white);
+        z-index: 9;
+        padding: 0.5rem 1rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -1rem;
+        padding: 1rem;
+    }
+
+    .details-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin-right: 1rem;
+    }
+
+    .modal.show {
+        transform: none;
+        animation: slideUpFull 0.3s ease;
+    }
+
+    @keyframes slideUpFull {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .description,
+    .team-photos,
+    .data-section,
+    .roadmap-section,
+    .video-section {
+        padding: 1rem;
+    }
+
+    .startup-metrics {
+        margin: 1rem;
+    }
+
+    .details-header {
+        padding: 1rem;
+        margin: 0;
+    }
+}
+
+/* Quando o usuário está scrollando */
+.modal.scrolling {
+    transition: transform 0.1s ease;
+}
+
+.modal.show {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 768px) {
+    .modal {
+        right: 1rem;
+        bottom: 1rem;
+        left: 1rem;
+        width: auto;
+        max-height: 70vh; /* Reduzido de 90vh para 70vh */
+    }
+}
+
+/* Ajustes no scroll interno do modal */
+.modal-content {
+    max-height: calc(80vh - 60px); /* 60px é a altura aproximada do header */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem;
+    scrollbar-width: thin;
+}
+
+/* Estilização do scroll interno */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* Ajuste no header do modal para ficar fixo */
+.modal-header {
+    position: sticky;
+    top: 0;
+    background-color: var(--white);
+    z-index: 1;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .modal.show {
@@ -632,6 +991,8 @@ header {
 
 .data-section {
     padding: 1rem;
+    max-height: 300px; /* Altura máxima */
+    overflow-y: auto; /* Ativa o scroll vertical */
 }
 
 .data-section h3 {
@@ -742,6 +1103,64 @@ header {
     border-radius: 8px;
 }
 
+.video-section {
+    width: 100%;
+    padding: 1rem 0;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* Aspect ratio 16:9 */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.tab-content {
+    padding: 1rem;
+}
+
+.video-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-top: 56.25%; /* Aspect ratio 16:9 */
+    width: 100%;
+    height: 0;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.tab-content {
+    padding: 1rem;
+}
+
+.video-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 @media (max-width: 768px) {
     .content-wrapper {
         display: block;
@@ -779,6 +1198,8 @@ header {
 
     .metric-value {
         font-size: 1.2rem;
+        display: flex;
+        justify-content: space-evenly;
     }
 
     .metric-label {
@@ -899,7 +1320,6 @@ header {
 }
 
 /* Estilização do Hamburger */
-/* Estilização do Hamburger */
 .hamburger {
     display: none;
     cursor: pointer;
@@ -919,6 +1339,18 @@ header {
     margin: 4px 0;
     background-color: var(--white);
     transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
 }
 
 /* Menu de navegação */
@@ -997,6 +1429,19 @@ header {
         background-color: rgba(255, 255, 255, 0.2); /* Efeito de hover com fundo semi-transparente */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+
+    .nav-menu .logout-btn {
+        margin-top: 2rem;
+        background-color: rgba(255, 0, 0, 0.2);
+    }
+
+    .nav-menu .logout-btn:hover {
+        background-color: rgba(255, 0, 0, 0.3);
+    }
+
+    body.no-scroll {
+        overflow: hidden;
+    }
 }
 
 
@@ -1010,6 +1455,2556 @@ header {
     content: ' (Login necessário)'; /* Adiciona um texto informativo */
     font-size: 0.8rem;
     color: #aaa;
+}
+
+/* Estilização da barra de rolagem */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+    }
+
+    .modal-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content {
+        margin-top: 60px !important; /* Altura do header */
+        height: calc(100vh - 60px) !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 !important;
+        position: relative !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 9999 !important;
+        padding: 1rem !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content > * {
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important; /* Muda para auto para permitir posicionamento bottom */
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important; /* Muda para auto */
+        max-height: 50vh !important; /* Limita a altura em 50% da viewport */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important; /* Adiciona bordas arredondadas no topo */
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var(--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important; /* Muda para sticky */
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        display: block !important; /* Garante que o botão seja visível */
+        position: relative !important;
+        z-index: 10001 !important; /* Mantém acima de outros elementos */
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 1rem !important;
+        position: relative !important;
+        height: auto !important; /* Permite que o conteúdo defina a altura */
+    }
+
+    .modal.show {
+        animation: slideUpHalf 0.3s ease !important;
+    }
+
+    @keyframes slideUpHalf {
+        from {
+            transform: translateY(100%) !important;
+        }
+        to {
+            transform: translateY(0) !important;
+        }
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important; /* Área de toque maior */
+        height: 44px !important; /* Área de toque maior */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important; /* Maior que o header */
+        touch-action: manipulation !important; /* Melhora resposta ao toque */
+    }
+
+    .modal-close:active {
+        opacity: 0.7 !important; /* Feedback visual ao clicar */
+    }
+
+    .modal-drag-handle {
+        position: absolute !important;
+        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40px !important;
+        height: 4px !important;
+        background-color: #e0e0e0 !important;
+        border-radius: 2px !important;
+        margin: 8px auto !important;
+        cursor: grab !important;
+        touch-action: none !important;
+        z-index: 10003 !important;
+    }
+
+    .modal-drag-handle:active {
+        cursor: grabbing !important;
+        background-color: #bdbdbd !important;
+    }
+
+    .modal-header {
+        margin-top: 20px !important; /* Espaço para a alça */
+    }
+}
+
+/* Remove o popup automático na versão mobile */
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important; /* Remove o popup automático */
+    }
+
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 50vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var (--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important;
+    }
+
+    .modal {
+        display: none;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        background: var(--white) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 9999 !important;
+    }
+
+    .modal.show {
+        display: block !important;
+        transform: translateY(0) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 1rem !important;
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        z-index: 1 !important;
+    }
+
+    .modal-content {
+        overflow-y: auto !important;
+        padding: 1rem !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .modal-close {
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: none !important;
+        border: none !important;
+        font-size: 1.5rem !important;
+        cursor: pointer !important;
+        color: var(--dark-blue) !important;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 0 !important;
+    }
+
+    .startup-header-mobile {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha os elementos verticalmente */
+        align-items: center !important; /* Centraliza horizontalmente */
+        padding: 2.5rem 1rem 1rem !important; /* Aumentado padding-top para 2.5rem */
+        margin-top: -1rem !important; /* Margem negativa para puxar para cima */
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .startup-info-container {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha logo e categoria */
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .startup-logo {
+        margin-top: -1.5rem !important; /* Margem negativa para puxar a logo mais para cima */
+        width: 72px !important; /* Aumentado um pouco mais o tamanho */
+        height: 72px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .startup-logo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .startup-category {
+        font-size: 0.9rem !important;
+        padding: 0.4rem 1.2rem !important;
+        background-color: #f0f7ff !important;
+        border-radius: 15px !important;
+        color: var(--primary-color) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 90vh !important; /* Aumenta a altura para 90% da viewport */
+        max-height: none !important; /* Remove limite de altura */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        background-color: var(--white) !important;
+        overflow-y: auto !important; /* Habilita scroll vertical */
+        -webkit-overflow-scrolling: touch !important; /* Scroll suave no iOS */
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        padding-bottom: 2rem !important; /* Adiciona espaço no final do conteúdo */
+        min-height: 100% !important; /* Garante altura mínima para scroll */
+    }
+
+    .startup-metrics {
+        margin-top: 1rem !important;
+        padding: 1rem !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 60px !important; /* Altura do header */
+        background: var(--white) !important;
+        z-index: 2 !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important; /* Evita scroll do body quando modal está aberto */
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        transform: translateY(100%) !important; /* Inicia fora da tela */
+        transition: transform 0.3s ease !important;
+        opacity: 0; /* Inicia invisível */
+    }
+
+    .modal.show {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        display: flex !important; /* Mudado para flex */
+    }
+
+    .modal-content {
+        padding-bottom: env(safe-area-inset-bottom) !important; /* Suporte para iPhones com notch */
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 1rem !important; /* Ajustado para ficar mais acessível */
+        width: 44px !important;
+        height: 44px !important;
+        z-index: 10002 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil */
+        border-radius: 50% !important; /* Botão circular */
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+    }
+
+    .modal-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content {
+        margin-top: 60px !important; /* Altura do header */
+        height: calc(100vh - 60px) !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 !important;
+        position: relative !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 9999 !important;
+        padding: 1rem !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content > * {
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important; /* Muda para auto para permitir posicionamento bottom */
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important; /* Muda para auto */
+        max-height: 50vh !important; /* Limita a altura em 50% da viewport */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important; /* Adiciona bordas arredondadas no topo */
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var(--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important; /* Muda para sticky */
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        display: block !important; /* Garante que o botão seja visível */
+        position: relative !important;
+        z-index: 10001 !important; /* Mantém acima de outros elementos */
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 1rem !important;
+        position: relative !important;
+        height: auto !important; /* Permite que o conteúdo defina a altura */
+    }
+
+    .modal.show {
+        animation: slideUpHalf 0.3s ease !important;
+    }
+
+    @keyframes slideUpHalf {
+        from {
+            transform: translateY(100%) !important;
+        }
+        to {
+            transform: translateY(0) !important;
+        }
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important; /* Área de toque maior */
+        height: 44px !important; /* Área de toque maior */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important; /* Maior que o header */
+        touch-action: manipulation !important; /* Melhora resposta ao toque */
+    }
+
+    .modal-close:active {
+        opacity: 0.7 !important; /* Feedback visual ao clicar */
+    }
+
+    .modal-drag-handle {
+        position: absolute !important;
+        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40px !important;
+        height: 4px !important;
+        background-color: #e0e0e0 !important;
+        border-radius: 2px !important;
+        margin: 8px auto !important;
+        cursor: grab !important;
+        touch-action: none !important;
+        z-index: 10003 !important;
+    }
+
+    .modal-drag-handle:active {
+        cursor: grabbing !important;
+        background-color: #bdbdbd !important;
+    }
+
+    .modal-header {
+        margin-top: 20px !important; /* Espaço para a alça */
+    }
+}
+
+/* Remove o popup automático na versão mobile */
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important; /* Remove o popup automático */
+    }
+
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 50vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var (--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important;
+    }
+
+    .modal {
+        display: none;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        background: var(--white) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 9999 !important;
+    }
+
+    .modal.show {
+        display: block !important;
+        transform: translateY(0) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 1rem !important;
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        z-index: 1 !important;
+    }
+
+    .modal-content {
+        overflow-y: auto !important;
+        padding: 1rem !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .modal-close {
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: none !important;
+        border: none !important;
+        font-size: 1.5rem !important;
+        cursor: pointer !important;
+        color: var(--dark-blue) !important;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 0 !important;
+    }
+
+    .startup-header-mobile {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha os elementos verticalmente */
+        align-items: center !important; /* Centraliza horizontalmente */
+        padding: 2.5rem 1rem 1rem !important; /* Aumentado padding-top para 2.5rem */
+        margin-top: -1rem !important; /* Margem negativa para puxar para cima */
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .startup-info-container {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha logo e categoria */
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .startup-logo {
+        margin-top: -1.5rem !important; /* Margem negativa para puxar a logo mais para cima */
+        width: 72px !important; /* Aumentado um pouco mais o tamanho */
+        height: 72px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .startup-logo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .startup-category {
+        font-size: 0.9rem !important;
+        padding: 0.4rem 1.2rem !important;
+        background-color: #f0f7ff !important;
+        border-radius: 15px !important;
+        color: var(--primary-color) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 90vh !important; /* Aumenta a altura para 90% da viewport */
+        max-height: none !important; /* Remove limite de altura */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        background-color: var(--white) !important;
+        overflow-y: auto !important; /* Habilita scroll vertical */
+        -webkit-overflow-scrolling: touch !important; /* Scroll suave no iOS */
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        padding-bottom: 2rem !important; /* Adiciona espaço no final do conteúdo */
+        min-height: 100% !important; /* Garante altura mínima para scroll */
+    }
+
+    .startup-metrics {
+        margin-top: 1rem !important;
+        padding: 1rem !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 60px !important; /* Altura do header */
+        background: var(--white) !important;
+        z-index: 2 !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important; /* Evita scroll do body quando modal está aberto */
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        transform: translateY(100%) !important; /* Inicia fora da tela */
+        transition: transform 0.3s ease !important;
+        opacity: 0; /* Inicia invisível */
+    }
+
+    .modal.show {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        display: flex !important; /* Mudado para flex */
+    }
+
+    .modal-content {
+        padding-bottom: env(safe-area-inset-bottom) !important; /* Suporte para iPhones com notch */
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 1rem !important; /* Ajustado para ficar mais acessível */
+        width: 44px !important;
+        height: 44px !important;
+        z-index: 10002 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil */
+        border-radius: 50% !important; /* Botão circular */
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+    }
+
+    .modal-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content {
+        margin-top: 60px !important; /* Altura do header */
+        height: calc(100vh - 60px) !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 !important;
+        position: relative !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 9999 !important;
+        padding: 1rem !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content > * {
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important; /* Muda para auto para permitir posicionamento bottom */
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important; /* Muda para auto */
+        max-height: 50vh !important; /* Limita a altura em 50% da viewport */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important; /* Adiciona bordas arredondadas no topo */
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var(--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important; /* Muda para sticky */
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        display: block !important; /* Garante que o botão seja visível */
+        position: relative !important;
+        z-index: 10001 !important; /* Mantém acima de outros elementos */
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 1rem !important;
+        position: relative !important;
+        height: auto !important; /* Permite que o conteúdo defina a altura */
+    }
+
+    .modal.show {
+        animation: slideUpHalf 0.3s ease !important;
+    }
+
+    @keyframes slideUpHalf {
+        from {
+            transform: translateY(100%) !important;
+        }
+        to {
+            transform: translateY(0) !important;
+        }
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important; /* Área de toque maior */
+        height: 44px !important; /* Área de toque maior */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important; /* Maior que o header */
+        touch-action: manipulation !important; /* Melhora resposta ao toque */
+    }
+
+    .modal-close:active {
+        opacity: 0.7 !important; /* Feedback visual ao clicar */
+    }
+
+    .modal-drag-handle {
+        position: absolute !important;
+        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40px !important;
+        height: 4px !important;
+        background-color: #e0e0e0 !important;
+        border-radius: 2px !important;
+        margin: 8px auto !important;
+        cursor: grab !important;
+        touch-action: none !important;
+        z-index: 10003 !important;
+    }
+
+    .modal-drag-handle:active {
+        cursor: grabbing !important;
+        background-color: #bdbdbd !important;
+    }
+
+    .modal-header {
+        margin-top: 20px !important; /* Espaço para a alça */
+    }
+}
+
+/* Remove o popup automático na versão mobile */
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important; /* Remove o popup automático */
+    }
+
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 50vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var (--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important;
+    }
+
+    .modal {
+        display: none;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        background: var(--white) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 9999 !important;
+    }
+
+    .modal.show {
+        display: block !important;
+        transform: translateY(0) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 1rem !important;
+        background: var (--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        z-index: 1 !important;
+    }
+
+    .modal-content {
+        overflow-y: auto !important;
+        padding: 1rem !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .modal-close {
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: none !important;
+        border: none !important;
+        font-size: 1.5rem !important;
+        cursor: pointer !important;
+        color: var(--dark-blue) !important;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 0 !important;
+    }
+
+    .startup-header-mobile {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha os elementos verticalmente */
+        align-items: center !important; /* Centraliza horizontalmente */
+        padding: 2.5rem 1rem 1rem !important; /* Aumentado padding-top para 2.5rem */
+        margin-top: -1rem !important; /* Margem negativa para puxar para cima */
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .startup-info-container {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha logo e categoria */
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .startup-logo {
+        margin-top: -1.5rem !important; /* Margem negativa para puxar a logo mais para cima */
+        width: 72px !important; /* Aumentado um pouco mais o tamanho */
+        height: 72px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .startup-logo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .startup-category {
+        font-size: 0.9rem !important;
+        padding: 0.4rem 1.2rem !important;
+        background-color: #f0f7ff !important;
+        border-radius: 15px !important;
+        color: var(--primary-color) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 90vh !important; /* Aumenta a altura para 90% da viewport */
+        max-height: none !important; /* Remove limite de altura */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        background-color: var(--white) !important;
+        overflow-y: auto !important; /* Habilita scroll vertical */
+        -webkit-overflow-scrolling: touch !important; /* Scroll suave no iOS */
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        padding-bottom: 2rem !important; /* Adiciona espaço no final do conteúdo */
+        min-height: 100% !important; /* Garante altura mínima para scroll */
+    }
+
+    .startup-metrics {
+        margin-top: 1rem !important;
+        padding: 1rem !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 60px !important; /* Altura do header */
+        background: var(--white) !important;
+        z-index: 2 !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important; /* Evita scroll do body quando modal está aberto */
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        transform: translateY(100%) !important; /* Inicia fora da tela */
+        transition: transform 0.3s ease !important;
+        opacity: 0; /* Inicia invisível */
+    }
+
+    .modal.show {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        display: flex !important; /* Mudado para flex */
+    }
+
+    .modal-content {
+        padding-bottom: env(safe-area-inset-bottom) !important; /* Suporte para iPhones com notch */
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 1rem !important; /* Ajustado para ficar mais acessível */
+        width: 44px !important;
+        height: 44px !important;
+        z-index: 10002 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil */
+        border-radius: 50% !important; /* Botão circular */
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+    }
+
+    .modal-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content {
+        margin-top: 60px !important; /* Altura do header */
+        height: calc(100vh - 60px) !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 !important;
+        position: relative !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 9999 !important;
+        padding: 1rem !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content > * {
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important; /* Muda para auto para permitir posicionamento bottom */
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important; /* Muda para auto */
+        max-height: 50vh !important; /* Limita a altura em 50% da viewport */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important; /* Adiciona bordas arredondadas no topo */
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var(--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important; /* Muda para sticky */
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        display: block !important; /* Garante que o botão seja visível */
+        position: relative !important;
+        z-index: 10001 !important; /* Mantém acima de outros elementos */
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 1rem !important;
+        position: relative !important;
+        height: auto !important; /* Permite que o conteúdo defina a altura */
+    }
+
+    .modal.show {
+        animation: slideUpHalf 0.3s ease !important;
+    }
+
+    @keyframes slideUpHalf {
+        from {
+            transform: translateY(100%) !important;
+        }
+        to {
+            transform: translateY(0) !important;
+        }
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important; /* Área de toque maior */
+        height: 44px !important; /* Área de toque maior */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important; /* Maior que o header */
+        touch-action: manipulation !important; /* Melhora resposta ao toque */
+    }
+
+    .modal-close:active {
+        opacity: 0.7 !important; /* Feedback visual ao clicar */
+    }
+
+    .modal-drag-handle {
+        position: absolute !important;
+        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40px !important;
+        height: 4px !important;
+        background-color: #e0e0e0 !important;
+        border-radius: 2px !important;
+        margin: 8px auto !important;
+        cursor: grab !important;
+        touch-action: none !important;
+        z-index: 10003 !important;
+    }
+
+    .modal-drag-handle:active {
+        cursor: grabbing !important;
+        background-color: #bdbdbd !important;
+    }
+
+    .modal-header {
+        margin-top: 20px !important; /* Espaço para a alça */
+    }
+}
+
+/* Remove o popup automático na versão mobile */
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important; /* Remove o popup automático */
+    }
+
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 50vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var (--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important;
+    }
+
+    .modal {
+        display: none;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        background: var(--white) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 9999 !important;
+    }
+
+    .modal.show {
+        display: block !important;
+        transform: translateY(0) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 1rem !important;
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        z-index: 1 !important;
+    }
+
+    .modal-content {
+        overflow-y: auto !important;
+        padding: 1rem !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .modal-close {
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: none !important;
+        border: none !important;
+        font-size: 1.5rem !important;
+        cursor: pointer !important;
+        color: var(--dark-blue) !important;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 0 !important;
+    }
+
+    .startup-header-mobile {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha os elementos verticalmente */
+        align-items: center !important; /* Centraliza horizontalmente */
+        padding: 2.5rem 1rem 1rem !important; /* Aumentado padding-top para 2.5rem */
+        margin-top: -1rem !important; /* Margem negativa para puxar para cima */
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .startup-info-container {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha logo e categoria */
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .startup-logo {
+        margin-top: -1.5rem !important; /* Margem negativa para puxar a logo mais para cima */
+        width: 72px !important; /* Aumentado um pouco mais o tamanho */
+        height: 72px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .startup-logo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .startup-category {
+        font-size: 0.9rem !important;
+        padding: 0.4rem 1.2rem !important;
+        background-color: #f0f7ff !important;
+        border-radius: 15px !important;
+        color: var(--primary-color) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 90vh !important; /* Aumenta a altura para 90% da viewport */
+        max-height: none !important; /* Remove limite de altura */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        background-color: var(--white) !important;
+        overflow-y: auto !important; /* Habilita scroll vertical */
+        -webkit-overflow-scrolling: touch !important; /* Scroll suave no iOS */
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        padding-bottom: 2rem !important; /* Adiciona espaço no final do conteúdo */
+        min-height: 100% !important; /* Garante altura mínima para scroll */
+    }
+
+    .startup-metrics {
+        margin-top: 1rem !important;
+        padding: 1rem !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 60px !important; /* Altura do header */
+        background: var(--white) !important;
+        z-index: 2 !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important; /* Evita scroll do body quando modal está aberto */
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        transform: translateY(100%) !important; /* Inicia fora da tela */
+        transition: transform 0.3s ease !important;
+        opacity: 0; /* Inicia invisível */
+    }
+
+    .modal.show {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        display: flex !important; /* Mudado para flex */
+    }
+
+    .modal-content {
+        padding-bottom: env(safe-area-inset-bottom) !important; /* Suporte para iPhones com notch */
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 1rem !important; /* Ajustado para ficar mais acessível */
+        width: 44px !important;
+        height: 44px !important;
+        z-index: 10002 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil */
+        border-radius: 50% !important; /* Botão circular */
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+    }
+
+    .modal-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content {
+        margin-top: 60px !important; /* Altura do header */
+        height: calc(100vh - 60px) !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 !important;
+        position: relative !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 9999 !important;
+        padding: 1rem !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content > * {
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important; /* Muda para auto para permitir posicionamento bottom */
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important; /* Muda para auto */
+        max-height: 50vh !important; /* Limita a altura em 50% da viewport */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important; /* Adiciona bordas arredondadas no topo */
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var(--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important; /* Muda para sticky */
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        display: block !important; /* Garante que o botão seja visível */
+        position: relative !important;
+        z-index: 10001 !important; /* Mantém acima de outros elementos */
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 1rem !important;
+        position: relative !important;
+        height: auto !important; /* Permite que o conteúdo defina a altura */
+    }
+
+    .modal.show {
+        animation: slideUpHalf 0.3s ease !important;
+    }
+
+    @keyframes slideUpHalf {
+        from {
+            transform: translateY(100%) !important;
+        }
+        to {
+            transform: translateY(0) !important;
+        }
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important; /* Área de toque maior */
+        height: 44px !important; /* Área de toque maior */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important; /* Maior que o header */
+        touch-action: manipulation !important; /* Melhora resposta ao toque */
+    }
+
+    .modal-close:active {
+        opacity: 0.7 !important; /* Feedback visual ao clicar */
+    }
+
+    .modal-drag-handle {
+        position: absolute !important;
+        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40px !important;
+        height: 4px !important;
+        background-color: #e0e0e0 !important;
+        border-radius: 2px !important;
+        margin: 8px auto !important;
+        cursor: grab !important;
+        touch-action: none !important;
+        z-index: 10003 !important;
+    }
+
+    .modal-drag-handle:active {
+        cursor: grabbing !important;
+        background-color: #bdbdbd !important;
+    }
+
+    .modal-header {
+        margin-top: 20px !important; /* Espaço para a alça */
+    }
+}
+
+/* Remove o popup automático na versão mobile */
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important; /* Remove o popup automático */
+    }
+
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 50vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var (--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important;
+    }
+
+    .modal {
+        display: none;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        background: var(--white) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 9999 !important;
+    }
+
+    .modal.show {
+        display: block !important;
+        transform: translateY(0) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 1rem !important;
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        z-index: 1 !important;
+    }
+
+    .modal-content {
+        overflow-y: auto !important;
+        padding: 1rem !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .modal-close {
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: none !important;
+        border: none !important;
+        font-size: 1.5rem !important;
+        cursor: pointer !important;
+        color: var(--dark-blue) !important;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 0 !important;
+    }
+
+    .startup-header-mobile {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha os elementos verticalmente */
+        align-items: center !important; /* Centraliza horizontalmente */
+        padding: 2.5rem 1rem 1rem !important; /* Aumentado padding-top para 2.5rem */
+        margin-top: -1rem !important; /* Margem negativa para puxar para cima */
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .startup-info-container {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha logo e categoria */
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .startup-logo {
+        margin-top: -1.5rem !important; /* Margem negativa para puxar a logo mais para cima */
+        width: 72px !important; /* Aumentado um pouco mais o tamanho */
+        height: 72px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .startup-logo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .startup-category {
+        font-size: 0.9rem !important;
+        padding: 0.4rem 1.2rem !important;
+        background-color: #f0f7ff !important;
+        border-radius: 15px !important;
+        color: var(--primary-color) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 90vh !important; /* Aumenta a altura para 90% da viewport */
+        max-height: none !important; /* Remove limite de altura */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        background-color: var(--white) !important;
+        overflow-y: auto !important; /* Habilita scroll vertical */
+        -webkit-overflow-scrolling: touch !important; /* Scroll suave no iOS */
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        padding-bottom: 2rem !important; /* Adiciona espaço no final do conteúdo */
+        min-height: 100% !important; /* Garante altura mínima para scroll */
+    }
+
+    .startup-metrics {
+        margin-top: 1rem !important;
+        padding: 1rem !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 60px !important; /* Altura do header */
+        background: var(--white) !important;
+        z-index: 2 !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important; /* Evita scroll do body quando modal está aberto */
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        transform: translateY(100%) !important; /* Inicia fora da tela */
+        transition: transform 0.3s ease !important;
+        opacity: 0; /* Inicia invisível */
+    }
+
+    .modal.show {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        display: flex !important; /* Mudado para flex */
+    }
+
+    .modal-content {
+        padding-bottom: env(safe-area-inset-bottom) !important; /* Suporte para iPhones com notch */
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 1rem !important; /* Ajustado para ficar mais acessível */
+        width: 44px !important;
+        height: 44px !important;
+        z-index: 10002 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil */
+        border-radius: 50% !important; /* Botão circular */
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+    }
+
+    .modal-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content {
+        margin-top: 60px !important; /* Altura do header */
+        height: calc(100vh - 60px) !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0 !important;
+        position: relative !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 9999 !important;
+        padding: 1rem !important;
+        margin: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .modal-content > * {
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important; /* Muda para auto para permitir posicionamento bottom */
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important; /* Muda para auto */
+        max-height: 50vh !important; /* Limita a altura em 50% da viewport */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important; /* Adiciona bordas arredondadas no topo */
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var(--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important; /* Muda para sticky */
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        display: block !important; /* Garante que o botão seja visível */
+        position: relative !important;
+        z-index: 10001 !important; /* Mantém acima de outros elementos */
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 1rem !important;
+        position: relative !important;
+        height: auto !important; /* Permite que o conteúdo defina a altura */
+    }
+
+    .modal.show {
+        animation: slideUpHalf 0.3s ease !important;
+    }
+
+    @keyframes slideUpHalf {
+        from {
+            transform: translateY(100%) !important;
+        }
+        to {
+            transform: translateY(0) !important;
+        }
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important; /* Área de toque maior */
+        height: 44px !important; /* Área de toque maior */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important; /* Maior que o header */
+        touch-action: manipulation !important; /* Melhora resposta ao toque */
+    }
+
+    .modal-close:active {
+        opacity: 0.7 !important; /* Feedback visual ao clicar */
+    }
+
+    .modal-drag-handle {
+        position: absolute !important;
+        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40px !important;
+        height: 4px !important;
+        background-color: #e0e0e0 !important;
+        border-radius: 2px !important;
+        margin: 8px auto !important;
+        cursor: grab !important;
+        touch-action: none !important;
+        z-index: 10003 !important;
+    }
+
+    .modal-drag-handle:active {
+        cursor: grabbing !important;
+        background-color: #bdbdbd !important;
+    }
+
+    .modal-header {
+        margin-top: 20px !important; /* Espaço para a alça */
+    }
+}
+
+/* Remove o popup automático na versão mobile */
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important; /* Remove o popup automático */
+    }
+
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 50vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        overflow: hidden !important;
+        background-color: var (--white) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        background: var(--white) !important;
+        z-index: 10000 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        color: var(--dark-blue) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem !important;
+        cursor: pointer !important;
+        z-index: 10002 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .startup-details {
+        display: none !important;
+    }
+
+    .modal {
+        display: none;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        background: var(--white) !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 9999 !important;
+    }
+
+    .modal.show {
+        display: block !important;
+        transform: translateY(0) !important;
+    }
+
+    .modal-header {
+        position: sticky !important;
+        top: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 1rem !important;
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+        z-index: 1 !important;
+    }
+
+    .modal-content {
+        overflow-y: auto !important;
+        padding: 1rem !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    .modal-close {
+        width: 44px !important;
+        height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: none !important;
+        border: none !important;
+        font-size: 1.5rem !important;
+        cursor: pointer !important;
+        color: var(--dark-blue) !important;
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 0 !important;
+    }
+
+    .startup-header-mobile {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha os elementos verticalmente */
+        align-items: center !important; /* Centraliza horizontalmente */
+        padding: 2.5rem 1rem 1rem !important; /* Aumentado padding-top para 2.5rem */
+        margin-top: -1rem !important; /* Margem negativa para puxar para cima */
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .startup-info-container {
+        display: flex !important;
+        flex-direction: column !important; /* Empilha logo e categoria */
+        align-items: center !important;
+        gap: 0.75rem !important;
+    }
+
+    .startup-logo {
+        margin-top: 1rem !important; /* Margem negativa para puxar a logo mais para cima */
+        width: 72px !important; /* Aumentado um pouco mais o tamanho */
+        height: 72px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .startup-logo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .startup-category {
+        font-size: 0.9rem !important;
+        padding: 0.4rem 1.2rem !important;
+        background-color: #f0f7ff !important;
+        border-radius: 15px !important;
+        color: var(--primary-color) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 90vh !important; /* Aumenta a altura para 90% da viewport */
+        max-height: none !important; /* Remove limite de altura */
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        z-index: 9999 !important;
+        background-color: var(--white) !important;
+        overflow-y: auto !important; /* Habilita scroll vertical */
+        -webkit-overflow-scrolling: touch !important; /* Scroll suave no iOS */
+    }
+
+    .modal-content {
+        flex: 1 !important;
+        padding-bottom: 2rem !important; /* Adiciona espaço no final do conteúdo */
+        min-height: 100% !important; /* Garante altura mínima para scroll */
+    }
+
+    .startup-metrics {
+        margin-top: 1rem !important;
+        padding: 1rem !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    .details-tabs {
+        position: sticky !important;
+        top: 60px !important; /* Altura do header */
+        background: var(--white) !important;
+        z-index: 2 !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    body.modal-open {
+        overflow: hidden !important; /* Evita scroll do body quando modal está aberto */
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        transform: translateY(100%) !important; /* Inicia fora da tela */
+        transition: transform 0.3s ease !important;
+        opacity: 0; /* Inicia invisível */
+    }
+
+    .modal.show {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        display: flex !important; /* Mudado para flex */
+    }
+
+    .modal-content {
+        padding-bottom: env(safe-area-inset-bottom) !important; /* Suporte para iPhones com notch */
+    }
+
+    .modal-close {
+        position: absolute !important;
+        right: 1rem !important;
+        top: 1rem !important; /* Ajustado para ficar mais acessível */
+        width: 44px !important;
+        height: 44px !important;
+        z-index: 10002 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil */
+        border-radius: 50% !important; /* Botão circular */
+    }
 }
 
 
