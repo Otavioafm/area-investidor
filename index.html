@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Find Invest - Encontre Startups</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=1.0.2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:">
 </head>
@@ -86,6 +86,11 @@
         </div>
     </main>
     <div class="modal" id="startupModal">
+        <!-- Adicionando o indicador de arrasto antes do header -->
+        <div class="modal-drag-indicator">
+            <div class="drag-pill"></div>
+            <span class="drag-text">Arraste para expandir</span>
+        </div>
         <div class="modal-header">
             <h2 id="modalTitle"></h2>
             <button class="modal-close" id="modalClose">&times;</button>
@@ -98,5 +103,6 @@
     <script type="module" src="js/menu.js"></script>
     <script type="module" src="js/auth-popup.js"></script>
     <script type="module" src="js/disable-tabs.js"></script>
+    <script type="module" src="js/search.js"></script>
 </body>
 </html>
