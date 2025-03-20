@@ -611,6 +611,15 @@ header {
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 1.5rem;
     padding: 0 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.details-tabs::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
 }
 
 .tab {
@@ -618,6 +627,9 @@ header {
     color: #666;
     cursor: pointer;
     position: relative;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.3s ease;
 }
 
 .tab.active {
@@ -991,7 +1003,7 @@ header {
     transform: translateY(0);
     opacity: 1;
     position: fixed;
-    top: 48%
+    top: 37%
 }
 
 .titulo1{
@@ -1562,35 +1574,33 @@ header {
 
 @media (max-width: 768px) {
     .modal {
-        display: none; /* Esconde por padrão */
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         width: 100%;
-        height: auto;
-        max-height: 90vh;
+        height: 80vh; /* Altura fixa do modal */
         background: var(--white);
         border-radius: 20px 20px 0 0;
-        transform: translateY(100%); /* Começa fora da tela */
-        transition: transform 0.3s ease;
         z-index: 999;
-        overflow: hidden;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        overflow-y: auto; /* Habilita scroll vertical */
+        -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
     }
 
     .modal.show {
-        display: block;
-        transform: translateY(0); /* Desliza para cima */
-        animation: slideUp 0.3s ease forwards;
+        transform: translateY(0);
     }
 
-    @keyframes slideUp {
-        from {
-            transform: translateY(100%);
-        }
-        to {
-            transform: translateY(0);
-        }
+    /* Remove estilos relacionados ao arraste */
+    .modal-drag-indicator {
+        display: none;
+    }
+
+    .modal-content {
+        padding: 20px;
+        padding-bottom: env(safe-area-inset-bottom); /* Suporte para iPhone X+ */
     }
 
     .modal-header {
@@ -1598,46 +1608,7 @@ header {
         top: 0;
         background: var(--white);
         padding: 1rem;
+        z-index: 10;
         border-bottom: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 2;
-    }
-
-    .modal-content {
-        max-height: calc(90vh - 60px);
-        overflow-y: auto;
-        padding: 1rem;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .modal-close {
-        width: 44px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Adiciona um overlay escuro quando o modal está aberto */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 998;
-    }
-
-    .modal-overlay.show {
-        display: block;
-    }
-
-    /* Desativa scroll do body quando modal está aberto */
-    body.modal-open {
-        overflow: hidden;
     }
 }
