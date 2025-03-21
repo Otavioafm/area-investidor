@@ -28,62 +28,6 @@ expandButton.addEventListener('click', () => {
     expandButton.classList.toggle('active');
 });
 
-// Render startup cards - Adaptado para async/await
-async function renderStartups(filters = {}) {
-    try {
-        const startups = await startupManager.getAllStartups(filters);
-        if (!startupsList) {
-            console.error('Elemento startupsList não encontrado');
-            return;
-        }
-
-        startupsList.innerHTML = startups.map(startup => `
-            <div class="startup-card" data-id="${startup.id}">
-                <div class="startup-header">
-                    <div class="startup-logo">
-                        <img src="https://picsum.photos/60">
-                    </div>
-                    <div class="startup-info">
-                        <h3>${startup.name}</h3>
-                        <span class="startup-category">${startup.category}</span>
-                    </div>
-                </div>
-                <p class="startup-description">${startup.description}</p>
-                <div class="startup-metrics">
-                    <div class="metric">
-                        <span class="metric-value">${startup.metrics.investment}</span>
-                        <span class="metric-label">Investimento</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-value">${startup.metrics.equity}</span>
-                        <span class="metric-label">Equity</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-value">${startup.metrics.investors}</span>
-                        <span class="metric-label">Investidores</span>
-                    </div>
-                </div>
-                <div class="card-actions">
-                    <button class="like-button" onclick="toggleLike(${startup.id})">
-                        <i class="fas fa-heart"></i> Curtir
-                    </button>
-                    <button class="invest-button" data-id="${startup.id}">Investir</button>
-                </div>
-            </div>
-        `).join('');
-        
-        addEventListeners(); // Separado em uma função própria
-
-        // Mostra automaticamente os detalhes da primeira startup
-        if (startups.length > 0 && !selectedStartup) {
-            showStartupDetails(startups[0].id);
-        }
-    } catch (error) {
-        console.error('Erro ao carregar startups:', error);
-        // Tratamento de erro adequado
-    }
-}
-
 // Modifica a função showStartupDetails
 async function showStartupDetails(id) {
     try {
@@ -293,24 +237,6 @@ function isUserLoggedIn() {
     return auth.isLoggedIn();
 }
 
-// Toggle like - Adaptado para async/await
-async function toggleLike(id) {
-    try {
-        const result = await startupManager.toggleLike(id);
-        if (result.success) {
-            if (likedStartups.has(id)) {
-                likedStartups.delete(id);
-            } else {
-                likedStartups.add(id);
-            }
-            renderStartups();
-        }
-    } catch (error) {
-        console.error('Erro ao alternar like:', error);
-        // Tratamento de erro adequado
-    }
-}
-
 // Modifique a função generateCategoryFilters
 async function generateCategoryFilters() {
     try {
@@ -382,8 +308,8 @@ async function filterStartups(category) {
                         </div>
                     </div>
                     <div class="card-actions">
-                        <button class="like-button">
-                            <i class="fas fa-heart"></i> Curtir
+                        <button class="share-button">
+                             <i class="fas fa-share"></i> Compartilhar
                         </button>
                         <button class="invest-button" data-id="${startup.id}">Investir</button>
                     </div>
@@ -495,7 +421,6 @@ function addEventListeners() {
 async function initialize() {
     try {
         await generateCategoryFilters();
-        await renderStartups();
     } catch (error) {
         console.error('Erro na inicialização:', error);
         // Tratamento de erro adequado
@@ -523,41 +448,6 @@ function redirectToPage(url) {
         });
         window.location.href = `${url}?${params.toString()}`;
     }
-}
-
-// Atualiza a função updateModalPosition
-function updateModalPosition() {
-    const modal = document.getElementById('startupModal');
-    const modalClose = document.getElementById('modalClose');
-    
-    if (!modal || !modal.classList.contains('show')) return;
-
-    // Em telas pequenas, mantenha o modal fixo na parte inferior
-    if (window.innerWidth <= 768) {
-        modal.style.transform = 'none';
-        modal.style.bottom = '0';
-        return;
-    }
-    
-    // Para telas maiores, mantenha o comportamento original
-    const viewportHeight = window.innerHeight;
-    const modalHeight = modal.offsetHeight;
-    const scrollY = window.scrollY;
-    
-    modal.classList.add('scrolling');
-    
-    const idealPosition = viewportHeight / 2;
-    const currentPosition = modalHeight / 2 + scrollY;
-    
-    if (currentPosition > idealPosition) {
-        modal.style.transform = `translateY(${-(currentPosition - idealPosition)}px)`;
-    } else {
-        modal.style.transform = 'translateY(-50%)';
-    }
-
-    setTimeout(() => {
-        modal.classList.remove('scrolling');
-    }, 100);
 }
 
 // Adiciona listener para scroll e resize
@@ -631,24 +521,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-// Adicione esta função para restaurar o scroll quando fechar o modal
-function closeModal() {
-    const isSmallScreen = window.innerWidth <= 768;
-    
-    if (isSmallScreen) {
-        const scrollY = document.body.style.top;
-        startupModal.classList.remove('show');
-        document.body.classList.remove('modal-open');
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-    } else {
-        startupModal.classList.remove('show');
-        document.body.classList.remove('modal-open');
-    }
-}
 
 
 
