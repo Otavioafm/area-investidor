@@ -97,17 +97,53 @@ document.addEventListener('DOMContentLoaded', () => {
                     ` : 'Vídeo não disponível'}
                 </div>
             </div>
+            
+            <div class="modal-actions">
+                <button class="invest-button" onclick="window.location.href='pagamento.html?${new URLSearchParams({
+                    id: startup.id,
+                    nome: startup.nome,
+                    logo: startup.logo,
+                    categoria: startup.categoria,
+                    investimento: startup.investimento,
+                    equity: startup.equity
+                }).toString()}'">
+                    Investir
+                </button>
+            </div>
         `;
 
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         setTimeout(() => modal.classList.add('show'), 10);
 
-        // Setup das tabs dentro do modal
         setupModalTabs();
-
-        // Inicializar o drag após abrir o modal
         setTimeout(initDrag, 100);
+    };
+
+    // Adiciona função global para redirecionamento
+    window.redirectToPayment = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const startup = {
+            id: document.querySelector('.startup-card')?.dataset.id,
+            nome: document.querySelector('.startup-info h3')?.textContent,
+            logo: document.querySelector('.startup-logo img')?.src,
+            categoria: document.querySelector('.startup-category')?.textContent,
+            investimento: document.querySelector('.metric-value')?.textContent,
+            equity: document.querySelectorAll('.metric-value')[1]?.textContent,
+        };
+
+        const params = new URLSearchParams({
+            id: startup.id || '',
+            nome: encodeURIComponent(startup.nome || ''),
+            logo: encodeURIComponent(startup.logo || ''),
+            categoria: encodeURIComponent(startup.categoria || ''),
+            investimento: encodeURIComponent(startup.investimento || ''),
+            equity: encodeURIComponent(startup.equity || '')
+        });
+
+        window.location.href = `pagamento.html?${params.toString()}`;
     };
 
     function setupModalTabs() {
@@ -161,46 +197,104 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adicionar lógica de drag
     let startY;
     let currentY;
-    let initialHeight;
-    let initialScroll;
     let isDragging = false;
 
     function initDrag() {
+        const dragIndicator = document.querySelector('.modal-drag-indicator');
+        if (!dragIndicator) return;
+
+        dragIndicator.addEventListener('touchstart', handleDragStart);
+        document.addEventListener('touchmove', handleDrag);
+        document.addEventListener('touchend', handleDragEnd);
+    }
+
+    function handleDragStart(e) {
+        isDragging = true;
+        startY = e.touches[0].clientY;
         const modal = document.querySelector('.modal');
-        if (!modal) return;
-
-        modal.addEventListener('touchstart', startDragging, { passive: true });
-        modal.addEventListener('touchmove', drag, { passive: false });
-        modal.addEventListener('touchend', endDragging);
+        modal.style.transition = 'none';
     }
 
-    function startDragging(e) {
-        startY = e.touches[0].pageY;
-        currentY = startY;
-        modal.classList.add('dragging');
-    }
+    function handleDrag(e) {
+        if (!isDragging) return;
 
-    function drag(e) {
-        if (!startY) return;
-        currentY = e.touches[0].pageY;
-        const diff = currentY - startY;
+        currentY = e.touches[0].clientY;
+        const deltaY = startY - currentY;
+        const modal = document.querySelector('.modal');
 
-        // Se estiver no topo e tentar puxar para baixo
-        if (modal.scrollTop === 0 && diff > 0) {
+        // Permite apenas arrasto para cima (deltaY positivo)
+        if (deltaY > 0 && !modal.classList.contains('expanded')) {
             e.preventDefault();
-            modal.style.transform = `translateY(${diff}px)`;
-            modal.style.transition = 'none';
+            modal.style.transform = `translateY(-${deltaY}px)`;
         }
     }
 
-    function endDragging() {
-        if (!startY) return;
+    function handleDragEnd() {
+        if (!isDragging) return;
         
-        modal.classList.remove('dragging');
-        modal.style.transform = '';
-        modal.style.transition = 'transform 0.3s ease';
+        const modal = document.querySelector('.modal');
+        isDragging = false;
+
+        modal.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         
+        const transform = modal.style.transform;
+        const currentDrag = parseInt(transform.replace(/[^0-9-]/g, '')) || 0;
+
+        if (currentDrag > 50) { // Se arrastou mais que 50px para cima
+            modal.style.transform = '';
+            modal.classList.add('expanded');
+        } else {
+            modal.style.transform = '';
+            modal.classList.remove('expanded');
+        }
+
         startY = null;
         currentY = null;
     }
+
+    // Esta função estava faltando no seu arquivo
+    function updateModalPosition() {
+        if (!modal) return;
+        
+        const viewportHeight = window.innerHeight;
+        const modalHeight = modal.offsetHeight;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        let topPosition = Math.max(0, (viewportHeight - modalHeight) / 2 + scrollTop);
+        modal.style.top = `${topPosition}px`;
+    }
+
+    // Adiciona evento de clique para o botão investir
+    document.addEventListener('click', function(e) {
+        const investButton = e.target.closest('.invest-button');
+        if (investButton) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const startupId = investButton.dataset.id;
+            const startupCard = investButton.closest('.startup-card');
+            
+            if (startupCard) {
+                const startup = {
+                    id: startupId,
+                    nome: startupCard.querySelector('.startup-info h3').textContent,
+                    logo: startupCard.querySelector('.startup-logo img').src,
+                    categoria: startupCard.querySelector('.startup-category').textContent,
+                    investimento: startupCard.querySelector('.metric-value').textContent,
+                    equity: startupCard.querySelectorAll('.metric-value')[1].textContent
+                };
+
+                const params = new URLSearchParams({
+                    id: startup.id,
+                    nome: encodeURIComponent(startup.nome),
+                    logo: encodeURIComponent(startup.logo),
+                    categoria: encodeURIComponent(startup.categoria),
+                    investimento: encodeURIComponent(startup.investimento),
+                    equity: encodeURIComponent(startup.equity)
+                });
+
+                window.location.href = `pagamento.html?${params.toString()}`;
+            }
+        }
+    });
 });

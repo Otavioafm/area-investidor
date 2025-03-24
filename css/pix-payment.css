@@ -1,0 +1,127 @@
+:root {
+    --primary-color: #0A1628;
+    --text-color: #1f2937;
+    --border-color: #e5e7eb;
+    --background-color: #f9fafb;
+    --success-color: #10b981;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+}
+
+.pix-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.timer-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.timer {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.timer-info {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.qr-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: var(--background-color);
+    border-radius: 4px;
+}
+
+.qr-code {
+    width: 300px;
+    height: 300px;
+}
+
+.code-section {
+    text-align: center;
+}
+
+.code-label {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.code-container {
+    background: var(--background-color);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+code {
+    display: block;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    word-break: break-all;
+    margin-bottom: 1rem;
+}
+
+.copy-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+    transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+    background-color: #162942;
+}
+
+.copy-button i {
+    font-size: 1.1rem;
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .qr-code {
+        width: 250px;
+        height: 250px;
+    }
+
+    .timer {
+        font-size: 2rem;
+    }
+}

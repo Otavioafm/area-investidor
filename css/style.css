@@ -864,11 +864,14 @@ header {
 
     .modal-drag-indicator {
         width: 100%;
-        padding: 12px 0 4px;
-        text-align: center;
+        padding: 12px 0;
+        display: flex;
+        justify-content: center;
         background: var(--white);
-        position: relative;
-        z-index: 3;
+        border-radius: 20px 20px 0 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
     .drag-pill {
@@ -876,13 +879,6 @@ header {
         height: 4px;
         background-color: #ddd;
         border-radius: 2px;
-        margin: 8px auto;
-        cursor: grab;
-    }
-
-    .dragging .drag-pill {
-        cursor: grabbing;
-        background-color: #bbb;
     }
 
     .drag-text {
@@ -1862,5 +1858,51 @@ header {
 
     .modal-container {
         padding-bottom: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 60vh; /* Altura inicial */
+        background: var(--white);
+        border-radius: 20px 20px 0 0;
+        z-index: 999;
+        transform: translateY(100%);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal.show {
+        transform: translateY(0);
+    }
+
+    .modal.expanded {
+        height: 95vh;
+    }
+
+    .modal.dragging {
+        transition: none;
+    }
+
+    .modal-drag-indicator {
+        padding: 12px 0;
+        display: flex;
+        justify-content: center;
+        background: var(--white);
+        border-radius: 20px 20px 0 0;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+    }
+
+    .drag-pill {
+        width: 40px;
+        height: 4px;
+        background-color: #ddd;
+        border-radius: 2px;
     }
 }

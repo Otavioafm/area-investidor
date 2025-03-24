@@ -1,35 +1,268 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Obtém parâmetros da URL
+document.addEventListener('DOMContentLoaded', () => {
+    // Recupera dados da URL e decodifica
     const params = new URLSearchParams(window.location.search);
     const startupData = {
-        id: params.get('startupId'),
-        name: decodeURIComponent(params.get('name')),
-        logo: decodeURIComponent(params.get('logo')),
-        category: decodeURIComponent(params.get('category')),
-        investment: decodeURIComponent(params.get('investment')),
-        equity: decodeURIComponent(params.get('equity'))
+        id: params.get('id'),
+        nome: decodeURIComponent(params.get('nome') || ''),
+        logo: decodeURIComponent(params.get('logo') || ''),
+        categoria: decodeURIComponent(params.get('categoria') || ''),
+        investimento: decodeURIComponent(params.get('investimento') || ''),
+        equity: decodeURIComponent(params.get('equity') || '')
     };
 
-    // Atualiza interface com dados da startup
-    const startupInfo = document.querySelector('.startup-info');
-    const calculatorInfo = document.querySelector('.calculator-info');
-    
-    if (startupInfo) {
-        startupInfo.querySelector('h3').textContent = startupData.name;
-        startupInfo.querySelector('img').src = startupData.logo;
-        startupInfo.querySelector('.tag').textContent = startupData.category;
+    // Verifica se os dados necessários estão presentes
+    if (!startupData.nome || !startupData.investimento) {
+        alert('Dados da startup não encontrados');
+        window.location.href = 'index.html';
+        return;
     }
 
+    // Atualiza informações na página
+    const startupInfo = document.querySelector('.startup-info');
+    if (startupInfo) {
+        startupInfo.querySelector('h3').textContent = startupData.nome;
+        startupInfo.querySelector('img').src = startupData.logo;
+        startupInfo.querySelector('.tag').textContent = startupData.categoria;
+    }
+
+    const calculatorInfo = document.querySelector('.calculator-info');
     if (calculatorInfo) {
         calculatorInfo.querySelector('p').textContent = 
-            `Valor total da oferta: ${startupData.investment} (${startupData.equity} da startup)`;
+            `Valor total da oferta: ${startupData.investimento} (${startupData.equity} da startup)`;
     }
 
-    // Constantes
-    const SERVICE_FEE = 5; // Taxa fixa de R$ 5,00
-    const MIN_INVESTMENT = 500;
+    // Controle das formas de pagamento
+    const paymentMethods = document.querySelectorAll('.payment-option input');
+    const creditDebitForm = document.getElementById('creditDebitForm');
+    const pixForm = document.getElementById('pixForm');
 
-    // Formata valores monetários
+    paymentMethods.forEach(method => {
+        method.addEventListener('change', (e) => {
+            const method = e.target.value;
+            
+            // Mostra/esconde formulários
+            creditDebitForm.classList.toggle('hidden', method === 'pix');
+            pixForm.classList.toggle('hidden', method !== 'pix');
+            
+            // Ajusta texto do botão
+            const submitButton = document.getElementById('submitButton');
+            if (submitButton) {
+                submitButton.textContent = method === 'pix' ? 'Gerar QR Code PIX' : 'Finalizar Pagamento';
+            }
+        });
+    });
+
+    // Máscara para campos do cartão
+    const cardNumber = document.getElementById('cardNumber');
+    cardNumber?.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        e.target.value = value;
+    });
+
+    const expiryDate = document.getElementById('expiryDate');
+    expiryDate?.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0,2) + '/' + value.substring(2);
+        }
+        e.target.value = value;
+    });
+
+    // Calcula valor em tempo real
+    const investmentAmount = document.getElementById('investmentAmount');
+    investmentAmount?.addEventListener('input', (e) => {
+        // Permite digitação livre
+        const value = e.target.value;
+        
+        // Remove caracteres não numéricos, exceto ponto e vírgula
+        const cleanValue = value.replace(/[^\d.,]/g, '');
+        
+        // Converte para número
+        const numValue = parseFloat(cleanValue.replace(',', '.')) || 0;
+        
+        // Atualiza cálculos
+        calculateInvestment();
+    });
+
+    function parseInvestmentValue(value) {
+        // Remove 'R$', espaços, 'K' e 'k' e converte para número
+        return parseFloat(value.replace(/[R$\s.k]/gi, '').replace(',', '.')) * 
+               (value.toLowerCase().includes('k') ? 1000 : 1);
+    }
+
+    function calculateInvestment() {
+        const inputValue = investmentAmount.value;
+        const totalInvestment = parseInvestmentValue(startupData.investimento);
+        const equityPercentage = parseFloat(startupData.equity);
+        
+        // Limita o número de dígitos baseado no valor máximo da captação
+        const maxDigits = Math.floor(totalInvestment).toString().length;
+        
+        // Se o valor digitado tiver mais dígitos que o permitido, trunca
+        if (inputValue.length > maxDigits) {
+            investmentAmount.value = inputValue.slice(0, maxDigits);
+        }
+
+        const amount = parseFloat(investmentAmount.value) || 0;
+
+        // Remove mensagem de erro anterior
+        const oldError = document.querySelector('.error-message');
+        if (oldError) oldError.remove();
+
+        // Validação de valores
+        if (amount < 500) {
+            showError('O valor mínimo de investimento é R$ 500,00');
+            updateValues(amount, totalInvestment, equityPercentage);
+            return;
+        }
+
+        if (amount > totalInvestment) {
+            showError(`O valor máximo de investimento é ${formatCurrency(totalInvestment)}`);
+            updateValues(totalInvestment, totalInvestment, equityPercentage);
+            return;
+        }
+
+        updateValues(amount, totalInvestment, equityPercentage);
+    }
+
+    function updateValues(amount, totalInvestment, equityPercentage) {
+        // Calcula equity proporcional
+        const proportion = amount / totalInvestment;
+        const newEquity = (proportion * equityPercentage).toFixed(2);
+        
+        // Atualiza displays
+        document.getElementById('percentageResult').textContent = `${newEquity}%`;
+        document.getElementById('investmentValue').textContent = formatCurrency(amount);
+        document.getElementById('totalValue').textContent = formatCurrency(amount);
+        
+        // Atualiza parcelas
+        updateInstallments(amount);
+    }
+
+    function showError(message) {
+        // Remove mensagem de erro anterior se existir
+        const existingError = document.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+    
+        // Cria nova mensagem de erro
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = message;
+        
+        const container = investmentAmount.parentElement;
+        container.appendChild(errorMessage);
+    }
+
+    // Atualiza o input para aceitar apenas números e limitar dígitos
+    investmentAmount?.addEventListener('input', (e) => {
+        let value = e.target.value;
+        
+        // Remove qualquer caractere que não seja número
+        value = value.replace(/\D/g, '');
+        
+        const totalInvestment = parseInvestmentValue(startupData.investimento);
+        const maxDigits = Math.floor(totalInvestment).toString().length;
+        
+        // Limita o número de dígitos
+        if (value.length > maxDigits) {
+            value = value.slice(0, maxDigits);
+        }
+        
+        // Atualiza o valor do input
+        e.target.value = value;
+        
+        if (value === '') {
+            document.getElementById('percentageResult').textContent = '0%';
+            document.getElementById('investmentValue').textContent = formatCurrency(0);
+            document.getElementById('totalValue').textContent = formatCurrency(0);
+            return;
+        }
+
+        calculateInvestment();
+    });
+
+    // Atualiza o event listener do input
+    investmentAmount?.addEventListener('input', (e) => {
+        const value = e.target.value;
+        if (value === '') return;
+
+        // Converte para número e valida
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) {
+            e.target.value = 500; // Valor mínimo se inválido
+        }
+        
+        calculateInvestment();
+    });
+
+    // Atualiza o event listener do input para melhor controle
+    investmentAmount?.addEventListener('input', (e) => {
+        const value = e.target.value;
+        
+        // Permite que o campo fique vazio temporariamente
+        if (value === '') {
+            document.getElementById('percentageResult').textContent = '0%';
+            document.getElementById('investmentValue').textContent = formatCurrency(0);
+            document.getElementById('totalValue').textContent = formatCurrency(0);
+            
+            // Remove mensagem de erro quando o campo estiver vazio
+            const errorMsg = document.querySelector('.error-message');
+            if (errorMsg) errorMsg.remove();
+            return;
+        }
+
+        // Remove caracteres não numéricos
+        const cleanValue = value.replace(/\D/g, '');
+        const numValue = parseInt(cleanValue);
+
+        // Validação do valor mínimo e máximo
+        const totalInvestment = parseInvestmentValue(startupData.investimento);
+
+        if (numValue < 500) {
+            showError('O valor mínimo de investimento é R$ 500,00');
+        } else if (numValue > totalInvestment) {
+            showError(`O valor máximo de investimento é ${formatCurrency(totalInvestment)}`);
+        } else {
+            // Remove mensagem de erro se existir
+            const errorMsg = document.querySelector('.error-message');
+            if (errorMsg) errorMsg.remove();
+        }
+
+        // Permite a digitação livre e atualiza os cálculos
+        calculateInvestment();
+    });
+
+    function updateTotalValue(amount) {
+        document.getElementById('investmentValue').textContent = formatCurrency(amount);
+        document.getElementById('totalValue').textContent = formatCurrency(amount);
+        
+        // Atualiza parcelas
+        updateInstallments(amount);
+    }
+
+    // Atualiza o HTML para remover a taxa de serviço
+    const serviceFeeRow = document.querySelector('.detail-row:nth-child(2)');
+    if (serviceFeeRow) {
+        serviceFeeRow.remove();
+    }
+
+    function updateInstallments(total) {
+        const installments = document.getElementById('installments');
+        if (!installments) return;
+
+        installments.innerHTML = '';
+        for (let i = 1; i <= 12; i++) {
+            const value = total / i;
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `${i}x de ${formatCurrency(value)} ${i <= 6 ? 'sem juros' : 'com juros'}`;
+            installments.appendChild(option);
+        }
+    }
+
     function formatCurrency(value) {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
@@ -37,94 +270,96 @@ document.addEventListener('DOMContentLoaded', function () {
         }).format(value);
     }
 
-    // Atualiza detalhes do investimento
-    function updateInvestmentDetails(amount) {
-        const investmentAmountInput = document.getElementById('investmentAmount');
+    // Processa pagamento
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Remove mensagens de erro anteriores
-        const existingError = investmentAmountInput?.parentElement.querySelector('.error-message');
-        if (existingError) existingError.remove();
-
-        // Validação do valor mínimo
-        if (amount < MIN_INVESTMENT) {
-            const error = document.createElement('div');
-            error.className = 'error-message';
-            error.textContent = `Valor mínimo de investimento: ${formatCurrency(MIN_INVESTMENT)}`;
-            investmentAmountInput?.parentElement.appendChild(error);
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        const amount = parseFloat(document.getElementById('investmentAmount').value);
+        
+        // Validações
+        if (amount < 500) {
+            showError('O valor mínimo de investimento é R$ 500,00');
             return;
         }
 
-        // Atualiza valores na interface
-        document.getElementById('investmentValue').textContent = formatCurrency(amount);
-        document.getElementById('serviceFee').textContent = formatCurrency(SERVICE_FEE);
-        document.getElementById('totalValue').textContent = formatCurrency(amount + SERVICE_FEE);
-
-        // Calcula porcentagem proporcional do equity
-        const totalInvestment = parseFloat(startupData.investment.replace(/[^0-9.-]+/g, ''));
-        const totalEquity = parseFloat(startupData.equity);
-        const percentage = (amount / totalInvestment) * totalEquity;
-        
-        document.getElementById('percentageResult').textContent = percentage.toFixed(2) + '%';
-
-        // Atualiza opções de parcelamento
-        updateInstallments(amount + SERVICE_FEE);
-    }
-
-    // Atualiza opções de parcelamento
-    function updateInstallments(total) {
-        const installmentsSelect = document.getElementById('installments');
-        if (!installmentsSelect) return;
-
-        installmentsSelect.innerHTML = '';
-        for (let i = 1; i <= 6; i++) {
-            const value = total / i;
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = `${i}x de ${formatCurrency(value)} sem juros`;
-            installmentsSelect.appendChild(option);
+        const totalInvestment = parseInvestmentValue(startupData.investimento);
+        if (amount > totalInvestment) {
+            showError(`O valor máximo de investimento é ${formatCurrency(totalInvestment)}`);
+            return;
         }
-    }
 
-    // Event Listeners
-    const investmentInput = document.getElementById('investmentAmount');
-    if (investmentInput) {
-        investmentInput.addEventListener('input', (e) => {
-            const value = parseInt(e.target.value.replace(/\D/g, '')) || 0;
-            updateInvestmentDetails(value);
-        });
-    }
-
-    // Form submission
-    const form = document.getElementById('paymentForm');
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                startupId: startupData.id,
-                amount: parseFloat(document.getElementById('investmentAmount').value),
-                paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
-                installments: document.getElementById('installments')?.value || 1
-            };
-
+        // Tratamento específico para PIX
+        if (paymentMethod === 'pix') {
             try {
-                // Aqui você faria a chamada para sua API
-                // const response = await fetch('/api/payments', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(formData)
-                // });
+                const params = new URLSearchParams({
+                    valor: amount,
+                    startup: startupData.nome,
+                    investimento: formatCurrency(amount),
+                    timestamp: Date.now()
+                });
                 
-                // Simulando sucesso
-                window.location.href = 'payment-success.html';
+                // Redirecionamento direto para a página de PIX
+                window.location.href = `pix-payment.html?${params.toString()}`;
             } catch (error) {
-                console.error('Erro ao processar pagamento:', error);
+                console.error('Erro ao redirecionar:', error);
                 alert('Erro ao processar pagamento. Tente novamente.');
             }
-        });
-    }
+            return;
+        }
+
+        // Processamento para outros métodos de pagamento
+        processCardPayment(amount);
+    });
 
     // Inicialização
-    const initialAmount = document.getElementById('investmentAmount')?.value || MIN_INVESTMENT;
-    updateInvestmentDetails(parseInt(initialAmount));
+    calculateInvestment();
 });
+
+// Função global para submissão do pagamento
+window.handlePaymentSubmit = function() {
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const amount = parseFloat(document.getElementById('investmentAmount').value) || 0;
+    
+    // Validações
+    if (amount < 500) {
+        showError('O valor mínimo de investimento é R$ 500,00');
+        return;
+    }
+
+    const totalInvestment = parseInvestmentValue(startupData.investimento);
+    if (amount > totalInvestment) {
+        showError(`O valor máximo de investimento é ${formatCurrency(totalInvestment)}`);
+        return;
+    }
+
+    // Tratamento específico para PIX
+    if (paymentMethod === 'pix') {
+        try {
+            const params = new URLSearchParams({
+                valor: amount,
+                startup: startupData.nome,
+                investimento: formatCurrency(amount),
+                timestamp: Date.now()
+            });
+            
+            // Redirecionamento direto para a página de PIX
+            window.location.href = `pix-payment.html?${params.toString()}`;
+        } catch (error) {
+            console.error('Erro ao redirecionar:', error);
+            alert('Erro ao processar pagamento. Tente novamente.');
+        }
+        return;
+    }
+
+    // Processamento para outros métodos de pagamento
+    processCardPayment(amount);
+}
+
+// Remove o event listener antigo do form
+const paymentForm = document.getElementById('paymentForm');
+if (paymentForm) {
+    paymentForm.onsubmit = function(e) {
+        e.preventDefault();
+    };
+}

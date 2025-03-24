@@ -37,15 +37,11 @@
                 <div class="investment-details">
                     <div class="detail-row">
                         <span>Valor do Investimento</span>
-                        <strong id="investmentValue">R$ 10.000,00</strong>
-                    </div>
-                    <div class="detail-row">
-                        <span>Taxa de Serviço (5%)</span>
-                        <strong id="serviceFee">R$ 500,00</strong>
+                        <strong id="investmentValue">R$ 0,00</strong>
                     </div>
                     <div class="detail-row total">
                         <span>Total</span>
-                        <strong id="totalValue">R$ 10.500,00</strong>
+                        <strong id="totalValue">R$ 0,00</strong>
                     </div>
                 </div>
             </div>
@@ -73,11 +69,17 @@
                     </label>
                 </div>
 
-                <form id="paymentForm" class="payment-form">
+                <form id="paymentForm" class="payment-form" name="paymentForm">
                     <div id="creditDebitForm">
                         <div class="form-group">
                             <label for="cardNumber">Número do Cartão</label>
-                            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+                            <input type="text" 
+                                   id="cardNumber" 
+                                   name="cardNumber" 
+                                   placeholder="0000 0000 0000 0000" 
+                                   maxlength="19" 
+                                   aria-label="Número do Cartão"
+                                   required>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -108,19 +110,11 @@
 
                     <div id="pixForm" class="hidden">
                         <div class="pix-info">
-                            <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=128&amp;h=128&amp;fit=crop" alt="QR Code" class="pix-qr">
-                            <div class="pix-code">
-                                <p>Código PIX</p>
-                                <div class="copy-code">
-                                    <code>12345678901234567890</code>
-                                    <button type="button" class="copy-button" onclick="copyPixCode()">Copiar</button>
-                                </div>
-                            </div>
-                            <p class="pix-instructions">Escaneie o QR Code ou copie o código PIX para realizar o pagamento</p>
+                            <p>Clique abaixo para gerar o QR Code do PIX</p>
                         </div>
                     </div>
 
-                    <button type="submit" class="submit-button">
+                    <button type="button" id="submitButton" class="submit-button" onclick="redirectToPixPayment()">
                         Finalizar Pagamento
                     </button>
                 </form>
@@ -128,5 +122,19 @@
         </div>
     </div>
     <script src="js/pagamento.js"></script>
+    <script>
+        function redirectToPixPayment() {
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const amount = document.getElementById('investmentAmount').value;
+            
+            if (paymentMethod === 'pix') {
+                const params = new URLSearchParams({
+                    valor: amount,
+                    startup: document.querySelector('.startup-info h3').textContent
+                });
+                window.location.href = 'pix-payment.html?' + params.toString();
+            }
+        }
+    </script>
 </body>
 </html>

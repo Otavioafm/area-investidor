@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento PIX - Find Invest</title>
+    <link rel="stylesheet" href="css/pix-payment.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="pix-card">
+            <div class="timer-section">
+                <div class="timer" id="timer">05:00</div>
+                <p class="timer-info">Atualizando QR Code em</p>
+            </div>
+            
+            <div class="qr-section">
+                <img id="qrCode" src="path/to/qr-code.png" alt="QR Code PIX" class="qr-code">
+            </div>
+
+            <div class="code-section">
+                <p class="code-label">Código PIX</p>
+                <div class="code-container">
+                    <code id="pixCode">00020126580014BR.GOV.BCB.PIX0136f5e16ca2-4e43-a6b4-8cc18b3355a252040000530398654045.005802BR5925Find Invest Pagamentos SA6009Sao Paulo62070503***63046F38</code>
+                    <button id="copyButton" class="copy-button">
+                        <i class="fas fa-copy"></i>
+                        Copiar código
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/pix-payment.js"></script>
+</body>
+</html>

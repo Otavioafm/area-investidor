@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="css/style.css?v=1.0.2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self'">
 </head>
 <body>
     <header>
@@ -63,6 +65,12 @@
             <div class="content-wrapper">
                 <div class="startups-list" id="startupsList">
                     <!-- Cards serão inseridos aqui -->
+                    <button class="invest-button" 
+                            data-id="${startup.id}" 
+                            aria-label="Investir em ${startup.nome}"
+                            title="Clique para investir nesta startup">
+                        Investir
+                    </button>
                 </div>
                 <div class="startup-details" id="startupDetails"></div>
             </div>

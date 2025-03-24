@@ -249,6 +249,8 @@ input:focus, select:focus {
     cursor: pointer;
     transition: background-color 0.2s;
     text-align: center;
+    position: relative;
+    
 }
 
 .submit-button:hover {
