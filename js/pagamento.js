@@ -363,3 +363,44 @@ if (paymentForm) {
         e.preventDefault();
     };
 }
+
+// Substitui todas as funções de processamento de pagamento por uma única função global
+window.handlePayment = function() {
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const amount = parseFloat(document.getElementById('investmentAmount').value) || 0;
+    const equity = document.getElementById('percentageResult').textContent;
+    const startup = document.querySelector('.startup-info h3').textContent;
+    
+    // Validações antes do envio
+    if (amount < 500) {
+        showError('O valor mínimo de investimento é R$ 500,00');
+        return;
+    }
+
+    const totalInvestment = parseInvestmentValue(startupData.investimento);
+    if (amount > totalInvestment) {
+        showError(`O valor máximo de investimento é ${formatCurrency(totalInvestment)}`);
+        return;
+    }
+
+    // Cria parâmetros para a URL
+    const params = new URLSearchParams({
+        startup: encodeURIComponent(startup),
+        valor: encodeURIComponent(formatCurrency(amount)),
+        equity: encodeURIComponent(equity)
+    });
+
+    // Redirecionamento com base no método de pagamento
+    if (paymentMethod === 'pix') {
+        window.location.href = `pix-payment.html?${params.toString()}`;
+    } else {
+        window.location.href = `payment-success.html?${params.toString()}`;
+    }
+}
+
+// Remove código duplicado de event listeners do form
+if (paymentForm) {
+    paymentForm.onsubmit = function(e) {
+        e.preventDefault();
+    };
+}
